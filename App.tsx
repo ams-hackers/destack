@@ -10,13 +10,9 @@ import {
 } from "react-native";
 
 import { useStateWithHistory } from "./lib/history";
+import { Value, parseValue, formatValue } from "./lib/Value";
 
 type Stack = Value[];
-type Value = number;
-
-function parseValue(text: string): Value {
-  return parseFloat(text);
-}
 
 const STACK_VIEW_SIZE = 7;
 
@@ -128,7 +124,7 @@ export default function App() {
                   <TextInput
                     editable={false}
                     keyboardType="numeric"
-                    value={value === undefined ? "" : String(value)}
+                    value={value === undefined ? "" : formatValue(value)}
                   />
                 </View>
               </TouchableOpacity>
