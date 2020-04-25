@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { useStateWithHistory } from "./lib/history";
+
 type Stack = Value[];
 type Value = number;
 
@@ -26,7 +28,7 @@ function stackView(stack: Stack): Array<Value | undefined> {
 }
 
 function useStack() {
-  const [stack, rawSetStack] = useState<Stack>([]);
+  const [stack, rawSetStack, history] = useStateWithHistory<Stack>([]);
 
   const setStack = (newStack: Stack) => {
     if (newStack.length === 0) {
@@ -62,7 +64,18 @@ function useStack() {
     setStack([...stack.slice(0, i), ...stack.slice(i + 1)]);
   };
 
-  return { stack, tos, setStack, push, setTOS, dropNth, unaryOp, binaryOp };
+  return {
+    stack,
+    tos,
+    setStack,
+    push,
+    setTOS,
+    dropNth,
+    unaryOp,
+    binaryOp,
+    undo: history.undo,
+    redo: history.redo,
+  };
 }
 
 interface ButtonProps extends TouchableHighlightProps {
@@ -179,12 +192,6 @@ export default function App() {
           }}
         />
         <Op
-          title="CLEAR"
-          onPress={() => {
-            ops.setStack([]);
-          }}
-        />
-        <Op
           title="NUM"
           onPress={() => {
             setEnteringMode(true);
@@ -259,6 +266,20 @@ export default function App() {
           title="e"
           onPress={() => {
             ops.push(Math.E);
+          }}
+        />
+
+        <Op
+          title="UNDO"
+          onPress={() => {
+            ops.undo();
+          }}
+        />
+
+        <Op
+          title="REDO"
+          onPress={() => {
+            ops.redo();
           }}
         />
       </View>
